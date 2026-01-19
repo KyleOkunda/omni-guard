@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - SecurityPlatform{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 4rem auto;">
+    <div class="card">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Welcome Back</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="status-danger" style="margin-bottom: 1rem; border-radius: 0.375rem;">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div style="margin-bottom: 1rem;">
+                <label for="id_username" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Username</label>
+                {{ form.username }}
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label for="id_password" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Password</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Login</button>
+        </form>
+        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-muted);">
+            Don't have an account? <a href="{% url 'register' %}">Register</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

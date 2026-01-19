@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Endpoint Monitor - SecurityPlatform{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Simple auto-refresh for "Live" feel
+    setTimeout(function() {
+        window.location.reload();
+    }, 30000); // 30 seconds
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Endpoint Live Grid</h1>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <span style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">
+                <span style="width: 8px; height: 8px; background-color: var(--success-color); border-radius: 50%;"></span> Online
+            </span>
+            <span style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">
+                <span style="width: 8px; height: 8px; background-color: var(--warning-color); border-radius: 50%;"></span> Offline
+            </span>
+             <span style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">
+                <span style="width: 8px; height: 8px; background-color: var(--danger-color); border-radius: 50%;"></span> Risk
+            </span>
+        </div>
+    </div>
+
+    <div class="grid-3">
+        {% for agent in agents %}
+        <div class="card" style="border-top: 4px solid {% if agent.status == 'Online' %}var(--success-color){% elif agent.status == 'Risk' %}var(--danger-color){% elif agent.status == 'Disconnected' %}var(--text-muted){% else %}var(--warning-color){% endif %};">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.1rem;">{{ agent.hostname }}</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">{{ agent.agent_id }}</p>
+                </div>
+                <span class="status-badge {% if agent.status == 'Online' %}status-success{% elif agent.status == 'Risk' %}status-danger{% else %}status-warning{% endif %}">
+                    {{ agent.status }}
+                </span>
+            </div>
+            
+            <div style="margin-bottom: 1rem; font-size: 0.875rem;">
+                <p style="margin: 0.25rem 0;">
+                    <span style="color: var(--text-muted);">IP:</span> {{ agent.ip_address }}
+                </p>
+                <p style="margin: 0.25rem 0;">
+                    <span style="color: var(--text-muted);">Last Seen:</span> {{ agent.last_heartbeat|timesince }} ago
+                </p>
+            </div>
+
+            {% if agent.is_active %}
+                <a href="{% url 'disconnect_agent' agent.id %}" class="btn btn-danger" style="width: 100%; text-align: center; box-sizing: border-box; font-size: 0.8rem; padding: 0.5rem;" onclick="return confirm('Are you sure you want to force disconnect this agent?')">Force Disconnect</a>
+            {% else %}
+                <button disabled class="btn btn-outline" style="width: 100%; cursor: not-allowed; opacity: 0.5;">Disconnected</button>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
+            <h3>No Agents Connected</h3>
+            <p style="color: var(--text-muted);">Install the agent script on your devices to see them here.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card" style="margin-top: 2rem;">
+        <h3>How to connect an agent</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Send a POST request to the heartbeat API:</p>
+        <code style="display: block; background-color: #0f172a; padding: 1rem; border-radius: 0.5rem; color: #a5b4fc; overflow-x: auto;">
+curl -X POST http://localhost:8000/api/heartbeat/ \<br>
+&nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+&nbsp;&nbsp;-d '{"agent_id": "agent-001", "hostname": "WORKSTATION-X", "active_hooks_list": ["User32.dll", "unknown_miner.dll"]}'
+        </code>
+    </div>
+</div>
+{% endblock %}

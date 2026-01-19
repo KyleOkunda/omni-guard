@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Scan History - SecurityPlatform{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Infrastructure Scan History</h1>
+        <a href="{% url 'scan_network' %}" class="btn btn-primary">New Scan</a>
+    </div>
+
+    <div class="grid-3">
+        {% for scan in scans %}
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <h3 style="margin: 0; word-break: break-all;">{{ scan.target }}</h3>
+                    <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; background-color: {% if scan.grade == 'A' %}var(--success-color){% elif scan.grade == 'B' or scan.grade == 'C' %}var(--warning-color){% else %}var(--danger-color){% endif %}; color: #fff;">
+                        {{ scan.grade }}
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                    Scanned: {{ scan.scan_date|date:"M d, Y" }}
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span style="font-size: 0.875rem; color: var(--text-muted);">Score:</span>
+                    <span style="font-weight: 600;">{{ scan.score }}/100</span>
+                </div>
+            </div>
+            <a href="{% url 'network_report_detail' scan.id %}" class="btn btn-outline" style="text-align: center;">View Details</a>
+        </div>
+        {% empty %}
+        <div class="card" style="grid-column: 1 / -1; text-align: center;">
+            <p style="color: var(--text-muted);">No scans found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

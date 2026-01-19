@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - SecurityPlatform{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 4rem auto;">
+    <div class="card">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Create Account</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div style="margin-bottom: 1rem;">
+                    <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--danger-color); font-size: 0.875rem; margin-top: 0.25rem;">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Register</button>
+        </form>
+        <p style="text-align: center; margin-top: 1.5rem; color: var(--text-muted);">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

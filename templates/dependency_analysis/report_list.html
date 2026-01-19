@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Scan History - SecurityPlatform{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Values Scan History</h1>
+        <a href="{% url 'upload_dependency' %}" class="btn btn-primary">New Scan</a>
+    </div>
+
+    <div class="card" style="padding: 0;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-weight: 500;">Scan ID</th>
+                    <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-weight: 500;">Date</th>
+                    <th style="text-align: left; padding: 1rem; color: var(--text-muted); font-weight: 500;">File</th>
+                    <th style="text-align: center; padding: 1rem; color: var(--text-muted); font-weight: 500;">Dependencies</th>
+                    <th style="text-align: center; padding: 1rem; color: var(--text-muted); font-weight: 500;">Vulnerabilities</th>
+                    <th style="text-align: right; padding: 1rem; color: var(--text-muted); font-weight: 500;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem;">#{{ report.id }}</td>
+                    <td style="padding: 1rem;">{{ report.scan_date|date:"M d, Y H:i" }}</td>
+                    <td style="padding: 1rem;">{{ report.uploaded_file.name }}</td>
+                    <td style="padding: 1rem; text-align: center;">{{ report.total_dependencies }}</td>
+                    <td style="padding: 1rem; text-align: center;">
+                        {% if report.vulnerabilities_found > 0 %}
+                            <span class="status-badge status-danger">{{ report.vulnerabilities_found }}</span>
+                        {% else %}
+                            <span class="status-badge status-success">0</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem; text-align: right;">
+                        <a href="{% url 'dependency_report_detail' report.id %}" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">No scans found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Infrastructure Scan - SecurityPlatform{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <h1 style="margin-bottom: 2rem;">Infrastructure Monitor</h1>
+    
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <h2 style="margin-bottom: 1.5rem;">New Network Scan</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+            Enter a Domain or IP address to scan for exposed ports and security misconfigurations.
+        </p>
+        
+        {% if error %}
+            <div class="status-danger" style="margin-bottom: 1rem; padding: 1rem; border-radius: 0.375rem;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-bottom: 1.5rem;">
+                <label for="target" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 500;">Target Domain / IP</label>
+                <input type="text" name="target" id="target" placeholder="e.g. example.com or 192.168.1.1" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Start Scan</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

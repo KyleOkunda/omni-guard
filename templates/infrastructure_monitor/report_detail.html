@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Scan Report - {{ scan.target }}{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div style="margin-bottom: 2rem;">
+        <a href="{% url 'network_report_list' %}" style="color: var(--text-muted); font-size: 0.875rem;">&larr; Back to History</a>
+        <h1 style="margin-top: 0.5rem;">Report for {{ scan.target }}</h1>
+    </div>
+
+    <div class="grid-3" style="margin-bottom: 2rem;">
+        <div class="card" style="text-align: center;">
+            <p style="color: var(--text-muted); font-size: 0.875rem;">Security Grade</p>
+            <div style="font-size: 4rem; font-weight: 800; line-height: 1; margin-bottom: 0.5rem; color: {% if scan.grade == 'A' %}var(--success-color){% elif scan.grade == 'B' or scan.grade == 'C' %}var(--warning-color){% else %}var(--danger-color){% endif %};">
+                {{ scan.grade }}
+            </div>
+            <p style="color: var(--text-muted);">Score: {{ scan.score }}/100</p>
+        </div>
+        <div class="card" style="text-align: center;">
+            <p style="color: var(--text-muted); font-size: 0.875rem;">Exposed Ports</p>
+            <p style="font-size: 2rem; font-weight: 700; margin: 0;">{{ ports.count }}</p>
+        </div>
+        <div class="card" style="text-align: center;">
+            <p style="color: var(--text-muted); font-size: 0.875rem;">High Risk Services</p>
+            <p style="font-size: 2rem; font-weight: 700; margin: 0; color: {% if risk_ports > 0 %}var(--danger-color){% else %}var(--success-color){% endif %};">
+                {{ risk_ports }}
+            </p>
+        </div>
+    </div>
+
+    <h2>Detailed Analysis</h2>
+    <div class="card">
+        <h3 style="margin-bottom: 1rem;">Exposed Ports & Services</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <th style="text-align: left; padding: 1rem; color: var(--text-muted);">Port</th>
+                    <th style="text-align: left; padding: 1rem; color: var(--text-muted);">Service</th>
+                    <th style="text-align: left; padding: 1rem; color: var(--text-muted);">Status</th>
+                    <th style="text-align: left; padding: 1rem; color: var(--text-muted);">Recommendation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for port in ports %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem; font-family: monospace;">{{ port.port_number }}</td>
+                    <td style="padding: 1rem;">{{ port.service_name }}</td>
+                    <td style="padding: 1rem;">
+                        {% if port.is_risk %}
+                            <span class="status-badge status-danger">RISK</span>
+                        {% else %}
+                            <span class="status-badge status-success">SECURE</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem; color: var(--text-muted);">
+                        {% if port.is_risk %}
+                            Close this port if not absolutely necessary.
+                        {% else %}
+                            Standard service port. Ensure updated software.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No exposed ports detected.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

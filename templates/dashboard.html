@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="fade-in">
+    <h1 style="margin-bottom: 2rem;">Security Overview</h1>
+    <div class="grid-3">
+        <!-- Module A -->
+        <div class="card">
+            <h3 style="color: #60a5fa;">Dependency Analysis</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Analyze your project dependencies for known vulnerabilities using our Code Pillar engine.
+            </p>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{% url 'upload_dependency' %}" class="btn btn-primary">New Scan</a>
+                <a href="{% url 'dependency_report_list' %}" class="btn btn-outline">History</a>
+            </div>
+        </div>
+
+        <!-- Module B -->
+        <div class="card">
+            <h3 style="color: #34d399;">Infrastructure Monitor</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Scan your network infrastructure for exposed ports and SSL issues using the Network Pillar.
+            </p>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{% url 'scan_network' %}" class="btn btn-primary">New Scan</a>
+                <a href="{% url 'network_report_list' %}" class="btn btn-outline">History</a>
+            </div>
+        </div>
+
+        <!-- Module C -->
+        <div class="card">
+            <h3 style="color: #a78bfa;">Endpoint Monitor</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Real-time monitoring of your device fleet with heuristic analysis for spyware risks.
+            </p>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{% url 'endpoint_dashboard' %}" class="btn btn-primary">Live Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
