@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'dependency_analysis',
-    'infrastructure_monitor',
-    'endpoint_monitor',
+    'dependency_analysis.apps.DependencyAnalysisConfig',
+    'infrastructure_monitor.apps.InfrastructureMonitorConfig',
+    'endpoint_monitor.apps.EndpointMonitorConfig',
 ]
 
 MIDDLEWARE = [
