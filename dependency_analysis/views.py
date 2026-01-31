@@ -1,18 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import ScanReport, Vulnerability
-from .utils import parse_dependency_file, check_vulnerabilities
+from .utils import parse_dependency_files, check_vulnerabilities
 
 @login_required
 def upload_dependency_view(request):
     if request.method == 'POST':
         if 'dependency_file' not in request.FILES:
             return render(request, 'dependency_analysis/upload.html', {'error': 'No file selected'})
-            
-        file = request.FILES['dependency_file']
+
         
-        # 1. Parse File
-        dependencies = parse_dependency_file(file)
+        files = request.FILES.getlist('dependency_file')        
+        
+        # 1. Parse Files
+        dependencies = parse_dependency_files(files)
         
         # 2. Check Vulnerabilities
         vulns = check_vulnerabilities(dependencies)
@@ -20,7 +21,7 @@ def upload_dependency_view(request):
         # 3. Save Report
         report = ScanReport.objects.create(
             user=request.user,
-            uploaded_file=file,
+            uploaded_file=files,
             total_dependencies=len(dependencies),
             vulnerabilities_found=len(vulns)
         )

@@ -16,42 +16,44 @@ MOCK_VULNDB = {
     ]
 }
 
-def parse_dependency_file(file):
+def parse_dependency_files(files):
     """
-    Parses an uploaded file (JSON or TXT) and returns a list of dicts:
+    Parses uploaded files (JSON or TXT) and returns a list of dicts:
     [{'name': 'lib_name', 'version': '1.2.3'}]
     """
     dependencies = []
-    filename = file.name.lower()
+    #filename = file.name.lower()
     
     try:
-        content = file.read().decode('utf-8')
+       for file in files:
+            filename = file.name.lower()
+            content = file.read().decode('utf-8')
         
-        if filename.endswith('.json'):
-            data = json.loads(content)
-            # Support package.json structure
-            deps = data.get('dependencies', {})
-            deps.update(data.get('devDependencies', {}))
-            
-            # If it's just a simple list or dict
-            if isinstance(deps, dict):
-                for name, ver in deps.items():
-                    # Clean version string (remove ^, ~)
-                    clean_ver = re.sub(r'[^\d.]', '', ver)
-                    dependencies.append({'name': name, 'version': clean_ver})
-                    
-        elif filename.endswith('.txt'):
-            # requirements.txt format: name==version
-            for line in content.splitlines():
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                if '==' in line:
-                    parts = line.split('==')
-                    dependencies.append({'name': parts[0], 'version': parts[1]})
-                    
+            if filename.endswith('.json'):
+                data = json.loads(content)
+                # Support package.json structure
+                deps = data.get('dependencies', {})
+                deps.update(data.get('devDependencies', {}))
+                
+                # If it's just a simple list or dict
+                if isinstance(deps, dict):
+                    for name, ver in deps.items():
+                        # Clean version string (remove ^, ~)
+                        clean_ver = re.sub(r'[^\d.]', '', ver)
+                        dependencies.append({'name': name, 'version': clean_ver})
+                        
+            elif filename.endswith('.txt'):
+                # requirements.txt format: name==version
+                for line in content.splitlines():
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    if '==' in line:
+                        parts = line.split('==')
+                        dependencies.append({'name': parts[0], 'version': parts[1]})
+                        
     except Exception as e:
-        print(f"Error parsing file: {e}")
+        print(f"Error parsing file(s): {e}")
         return []
 
     return dependencies
