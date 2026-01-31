@@ -1,34 +1,64 @@
-{% extends 'base.html' %}
-
-{% block title %}Upload Dependencies - SecurityPlatform{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Upload Dependencies -
+SecurityPlatform{% endblock %} {% block content %}
 <div class="fade-in">
-    <h1 style="margin-bottom: 2rem;">Dependency Analysis Plugin</h1>
-    
-    <div class="card" style="max-width: 600px; margin: 0 auto;">
-        <h2 style="margin-bottom: 1.5rem;">New Scan</h2>
-        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-            Upload your `package.json` or `requirements.txt` file to scan for known vulnerabilities.
-        </p>
-        
-        {% if error %}
-            <div class="status-danger" style="margin-bottom: 1rem; padding: 1rem; border-radius: 0.375rem;">
-                {{ error }}
-            </div>
-        {% endif %}
+  <h1 style="margin-bottom: 2rem">Dependency Analysis Plugin</h1>
 
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div style="margin-bottom: 2rem; border: 2px dashed var(--border-color); padding: 2rem; text-align: center; border-radius: 0.5rem; cursor: pointer;" onclick="document.getElementById('file-input').click();">
-                <input type="file" name="dependency_file" id="file-input" style="display: none;" onchange="document.getElementById('file-name').textContent = this.files[0].name">
-                <p style="font-size: 3rem; margin: 0; color: var(--primary-color);">📄</p>
-                <p style="margin: 1rem 0; font-weight: 500;">Click to upload or drag and drop</p>
-                <p id="file-name" style="color: var(--text-muted); font-size: 0.875rem;"></p>
-            </div>
-            
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Analyze Dependencies</button>
-        </form>
+  <div class="card" style="max-width: 600px; margin: 0 auto">
+    <h2 style="margin-bottom: 1.5rem">New Scan</h2>
+    <p style="color: var(--text-muted); margin-bottom: 1.5rem">
+      Upload your `package.json` or `requirements.txt` file to scan for known
+      vulnerabilities.
+    </p>
+
+    {% if error %}
+    <div
+      class="status-danger"
+      style="margin-bottom: 1rem; padding: 1rem; border-radius: 0.375rem"
+    >
+      {{ error }}
     </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div
+        style="
+          margin-bottom: 2rem;
+          border: 2px dashed var(--border-color);
+          padding: 2rem;
+          text-align: center;
+          border-radius: 0.5rem;
+          cursor: pointer;
+        "
+        onclick="document.getElementById('file-input').click()"
+      >
+        <input
+          type="file"
+          multiple
+          name="dependency_file"
+          id="file-input"
+          style="display: none"
+        />
+        <p style="font-size: 3rem; margin: 0; color: var(--primary-color)">
+          📄
+        </p>
+        <p style="margin: 1rem 0; font-weight: 500">
+          Click to upload or drag and drop
+        </p>
+        <p
+          id="file-name"
+          style="color: var(--text-muted); font-size: 0.875rem"
+        ></p>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        style="width: 100%; padding: 0.75rem"
+      >
+        Analyze Dependencies
+      </button>
+    </form>
+  </div>
 </div>
 {% endblock %}
