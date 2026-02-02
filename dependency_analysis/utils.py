@@ -1,5 +1,9 @@
 import json
+import os
 import re
+import time
+import requests
+from django.shortcuts import render
 
 # Mock Database of Vulnerabilities
 MOCK_VULNDB = {
@@ -90,27 +94,45 @@ def compare_versions(current_ver, vulnerability_range):
         
     return False
 
-def check_vulnerabilities(dependencies):
+def check_vulnerabilities(dependencies, ecosystem, request):
     """
     Checks list of dependencies against MOCK_VULNDB.
     Returns list of vulnerabilities found.
     """
     found_vulns = []
-    
+    osvUrl = os.getenv("OSV_URL")
     for dep in dependencies:
-        name = dep['name'].lower()
-        version = dep['version']
-        
-        if name in MOCK_VULNDB:
-            for vuln in MOCK_VULNDB[name]:
-                if compare_versions(version, vuln['range']):
+        depName = dep['name']
+        depVersion = dep['version']
+        payload = { "package":
+          { "name": depName,
+            "ecosystem": ecosystem
+             },
+            "version": depVersion }
+
+        print(f"Checking {depName} version {depVersion} against OSV")  
+
+        try:
+            response = requests.post(osvUrl, json=payload)
+            if response.status_code == 200:
+                data = response.json()                
+                print(f"Found {len(data.get('vulns', []))} vulnerabilities:\n")
+                for item in data.get('vulns', []):
+                    print(item)
                     found_vulns.append({
-                        'library_name': dep['name'],
-                        'version': version,
-                        'cve_id': vuln['cve'],
-                        'description': vuln['desc'],
-                        'severity': vuln['severity'],
-                        'remediation': f"Upgrade to a version not matching {vuln['range']}"
+                        'library_name': depName,
+                        'version': depVersion,
+                        'cve_id': item.get('id', 'N/A'),
+                        'description': item.get('details', 'No description provided'),
+                        'severity': item.get("score", "N/A"),
+                        'remediation': item.get('references', [])
                     })
+            else:
+                print(f"OSV API error for {depName} version {depVersion}: {response.status_code} \n {response.text}")
+                return
+
+        except Exception as e:
+            print(f"Error querying OSV for {depName}: Error message: \n {e} \n {str(e)} \n {repr(e)} \n {e.args} \n {type(e)} \n -----------------------------------------------------------------------")
+            return render(request, 'dependency_analysis/upload.html', {'error': 'Error checking vulnerabilities. Please try again later.'})
                     
     return found_vulns
