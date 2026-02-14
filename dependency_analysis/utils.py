@@ -20,7 +20,7 @@ MOCK_VULNDB = {
     ]
 }
 
-def parse_dependency_files(files):
+def parse_dependency_files(files):    
     """
     Parses uploaded files (JSON or TXT) and returns a list of dicts:
     [{'name': 'lib_name', 'version': '1.2.3'}]
@@ -31,9 +31,10 @@ def parse_dependency_files(files):
     try:
        for file in files:
             filename = file.name.lower()
-            content = file.read().decode('utf-8')
+            content = file.read().decode('utf-8')            
         
             if filename.endswith('.json'):
+                print(f"Parsing JSON file: {filename}")
                 data = json.loads(content)
                 # Support package.json structure
                 deps = data.get('dependencies', {})
@@ -48,6 +49,7 @@ def parse_dependency_files(files):
                         
             elif filename.endswith('.txt'):
                 # requirements.txt format: name==version
+                print(f"Parsing TXT file: {filename}")
                 for line in content.splitlines():
                     line = line.strip()
                     if not line or line.startswith('#'):
@@ -55,7 +57,19 @@ def parse_dependency_files(files):
                     if '==' in line:
                         parts = line.split('==')
                         dependencies.append({'name': parts[0], 'version': parts[1]})
-                        
+
+            elif filename == 'pipfile':
+                print(f"Parsing Pipfile: {filename}")                
+                packages = content.split('[packages]')[1].split('[dev-packages]')[0].strip().splitlines()
+                for pkg in packages:
+                    print(pkg)
+                    if not pkg.strip() or pkg.strip().startswith('#'):
+                        continue
+                    if ' = ' in pkg:
+                        name, ver = pkg.split(' = ', 1)
+                        dependencies.append({'name': name.strip(), 'version': ver.strip()})
+
+
     except Exception as e:
         print(f"Error parsing file(s): {e}")
         return []
@@ -115,24 +129,34 @@ def check_vulnerabilities(dependencies, ecosystem, request):
         try:
             response = requests.post(osvUrl, json=payload)
             if response.status_code == 200:
-                data = response.json()                
+                data = response.json()                              
                 print(f"Found {len(data.get('vulns', []))} vulnerabilities:\n")
-                for item in data.get('vulns', []):
-                    print(item)
-                    found_vulns.append({
-                        'library_name': depName,
-                        'version': depVersion,
-                        'cve_id': item.get('id', 'N/A'),
-                        'description': item.get('details', 'No description provided'),
-                        'severity': item.get("score", "N/A"),
-                        'remediation': item.get('references', [])
-                    })
+                for item in data.get('vulns', []):                                        
+                    severity = item.get("severity", "N/A")
+                    if(severity!= "N/A"):
+                        found_vulns.append({
+                            'library_name': depName,
+                            'version': depVersion,
+                            'cve_id': item.get('id', 'N/A'),
+                            'description': item.get('details', 'No description provided'),
+                            'severity': item.get("severity", "N/A")[0].get("score", "N/A"),
+                            'remediation': "Please Update Dependency to Latest Version"
+                        })
+                    else:
+                        found_vulns.append({
+                            'library_name': depName,
+                            'version': depVersion,
+                            'cve_id': item.get('id', 'N/A'),
+                            'description': item.get('details', 'No description provided'),
+                            'severity': severity,
+                            'remediation': "Please Update Dependency to Latest Version"
+                        })
             else:
                 print(f"OSV API error for {depName} version {depVersion}: {response.status_code} \n {response.text}")
                 return
 
         except Exception as e:
-            print(f"Error querying OSV for {depName}: Error message: \n {e} \n {str(e)} \n {repr(e)} \n {e.args} \n {type(e)} \n -----------------------------------------------------------------------")
-            return render(request, 'dependency_analysis/upload.html', {'error': 'Error checking vulnerabilities. Please try again later.'})
+                print(f"Error querying OSV for {depName} version {depVersion}: \n {repr(e)} ")
+                return render(request, 'dependency_analysis/upload.html', {'error': 'Error checking vulnerabilities. Please try again later.'})
                     
     return found_vulns

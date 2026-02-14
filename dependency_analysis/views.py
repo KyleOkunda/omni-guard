@@ -18,8 +18,12 @@ def upload_dependency_view(request):
             ecosystem = "PyPI"
         elif firstFile.name.endswith("requirements.txt"):
             ecosystem = "PyPI"
+        
 
         for file in files:
+            if not (file.name == 'package.json' or file.name == 'requirements.txt' or file.name == 'Pipfile'):
+                return render(request, 'dependency_analysis/upload.html', {'error': 'Unsupported/Unknown file. We only support package.json, requirements.txt, and Pipfile.'})
+
             if not (file.name.endswith('.json') or file.name.endswith('.txt') or file.name == ('Pipfile')):
                 return render(request, 'dependency_analysis/upload.html', {'error': 'Unsupported file type. We only support package.json, requirements.txt, and Pipfile.'})
             
