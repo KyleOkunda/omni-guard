@@ -16,7 +16,7 @@ def scan_network_view(request):
         # 2. Score
         score, grade = calculate_grade(data)
         
-        # 3. Save
+        # 3. Save 
         scan = NetworkScan.objects.create(
             user=request.user,
             target=target,
@@ -24,12 +24,13 @@ def scan_network_view(request):
             grade=grade
         )
         
-        for p in data['ports']:
+        for port in data:
             ExposedPort.objects.create(
                 scan=scan,
-                port_number=p['port'],
-                service_name=p['service'],
-                is_risk=p['risk']
+                port_number=port['port'],
+                scanStatus=port['scanStatus'],
+                service_name=port['service'],
+                is_risk=port['risk']
             )
             
         return redirect('network_report_detail', report_id=scan.id)

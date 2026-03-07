@@ -14,8 +14,9 @@ class NetworkScan(models.Model):
 class ExposedPort(models.Model):
     scan = models.ForeignKey(NetworkScan, on_delete=models.CASCADE, related_name='exposed_ports')
     port_number = models.IntegerField()
+    scanStatus = models.CharField(default="Unknown Error")
     service_name = models.CharField(max_length=100)
-    is_risk = models.BooleanField(default=False)
+    is_risk = models.BooleanField(default="Unevaluated")
     
     def __str__(self):
         return f"{self.port_number}/{self.service_name}"

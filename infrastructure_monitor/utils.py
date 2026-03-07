@@ -1,4 +1,5 @@
-import random
+import errno
+import socket
 
 # Mock "Shodan" Data
 MOCK_PORTS = {
@@ -13,49 +14,75 @@ MOCK_PORTS = {
 
 def scan_target(target):
     """
-    Simulates scanning a target.
+    Scanning a target.
     Returns:
     {
-        'ports': [{'port': 80, 'service': 'HTTP', 'risk': False}, ...],
-        'ssl_expired': False
+        'ports': [{'port': 80, "scanStatus": "Success"  'service': 'HTTP', 'risk': False}, ...]
+        
     }
     """
-    # Simulate randomness if target not in mock DB
-    if target in MOCK_PORTS:
-        ports = MOCK_PORTS[target]
-        ssl_expired = False
-        if target == 'bad-site.com': ssl_expired = True
-    else:
-        # Random generation for unknown targets
-        ports = []
-        common_ports = [
-            (80, 'HTTP', False), (443, 'HTTPS', False), (22, 'SSH', False), 
-            (21, 'FTP', True), (3306, 'MySQL', True), (23, 'Telnet', True)
-        ]
-        # Pick 1-4 random ports
-        num_ports = random.randint(1, 4)
-        for _ in range(num_ports):
-            p = random.choice(common_ports)
-            ports.append({'port': p[0], 'service': p[1], 'risk': p[2]})
-        
-        ssl_expired = random.choice([True, False]) if 'HTTPS' in [p['service'] for p in ports] else False
+    print(f"Scanning target: {target}")
+    ports = [] #List of dicts
+    scan_dict = {}
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a TCP socket using IPv4
+    sock.settimeout(2)    
+    result = sock.connect_ex((target, 80))    
+    sock.close()
 
-    return {
-        'ports': ports,
-        'ssl_expired': ssl_expired
-    }
+    scan_dict["port"] = 80
+    scan_dict["service"] = "HTTP"    
+    
+    if result == 0:
+        scan_dict["scanStatus"] = "Success"
+        scan_dict["risk"] = True
+    elif result == errno.ECONNREFUSED:
+        scan_dict["scanStatus"] = "Connection Refused"
+        scan_dict["risk"] = False
+    elif result == errno.EHOSTUNREACH:
+        scan_dict["scanStatus"] = "Host Unreachable. Path to Destination Unavailable"
+        scan_dict["risk"] = "Unevaluated"
+    elif result == errno.ETIMEDOUT:
+        scan_dict["scanStatus"] = "Connection Timed Out. (Firewall Might Be Blocking Access to Target)"
+        scan_dict["risk"] = False
+    elif result == errno.ENETUNREACH:
+        scan_dict["scanStatus"] = "Network Unreachable. (Might Be No Internet Access)"
+        scan_dict["risk"] = "Unevaluated"
+    elif result ==  errno.EACCES or result == errno.EPERM:
+        scan_dict["scanStatus"] = "Permission Denied. (Might Be Your Local Firewall/Antivirus Blocking)"
+        scan_dict["risk"] = "Unevaluated"
+    else:
+        scan_dict["scanStatus"] = f"Unknown Error (Error Code: {result})"
+        scan_dict["risk"] = "Unevaluated"
+
+    print("The result of the scan: " , result)
+    print("Sacn Status: " , scan_dict["scanStatus"])
+    
+    ports.append(scan_dict)
+    return ports
+    
+
+    
+
+
 
 def calculate_grade(scan_data):
     """
     Score = 100 - (Risk Ports * 20) - (Expired SSL * 30)
     """
     base_score = 100
+    numberOfRiskports = 0
+    for port in scan_data:
+        if port['risk'] == True:
+            numberOfRiskports += 1
     
-    risk_ports = sum(1 for p in scan_data['ports'] if p['risk'])
-    ssl_expired = scan_data['ssl_expired']
+    risk_ports = numberOfRiskports        
+    ssl_expired = False 
+    #ssl_expired = scan_data['ssl_expired']
     
     penalty_ports = risk_ports * 20
     penalty_ssl = 30 if ssl_expired else 0
+
+
     
     score = base_score - penalty_ports - penalty_ssl
     if score < 0: score = 0
