@@ -24,7 +24,7 @@
       <p style="color: var(--text-muted)">Score: {{ scan.score }}/100</p>
     </div>
     <div class="card" style="text-align: center">
-      <p style="color: var(--text-muted); font-size: 0.875rem">Exposed Ports</p>
+      <p style="color: var(--text-muted); font-size: 0.875rem">Scanned Ports</p>
       <p style="font-size: 2rem; font-weight: 700; margin: 0">
         {{ ports.count }}
       </p>
@@ -60,7 +60,7 @@
             Scan Status
           </th>
           <th style="text-align: left; padding: 1rem; color: var(--text-muted)">
-            Recommendation
+            Exploit Vector
           </th>
         </tr>
       </thead>
@@ -72,9 +72,9 @@
           </td>
           <td style="padding: 1rem">{{ port.service_name }}</td>
           <td style="padding: 1rem">
-            {% if port.is_risk == True %}
+            {% if port.is_risk == "True" %}
             <span class="status-badge status-danger">True</span>
-            {% elif port.is_risk == False %}
+            {% elif port.is_risk == "False" %}
             <span class="status-badge status-success">False</span>
             {% else %}
             <span class="status-badge status-muted">Unevaluated</span>
@@ -84,10 +84,10 @@
             {{ port.scanStatus }}
           </td>
           <td style="padding: 1rem; color: var(--text-muted)">
-            {% if port.is_risk %}
-            <span>Close this port if not absolutely necessary.</span>
+            {% if port.exploit_vector %}
+            <span>{{ port.exploit_vector }}</span>
             {% else %}
-            <span>Standard service port. Ensure updated software.</span>
+            <span>No exploit vector available at the time of scan.</span>
             {% endif %}
           </td>
         </tr>

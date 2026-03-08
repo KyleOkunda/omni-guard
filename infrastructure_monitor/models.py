@@ -16,7 +16,8 @@ class ExposedPort(models.Model):
     port_number = models.IntegerField()
     scanStatus = models.CharField(default="Unknown Error")
     service_name = models.CharField(max_length=100)
-    is_risk = models.BooleanField(default="Unevaluated")
+    is_risk = models.CharField(default="Unevaluated")
+    exploit_vector = models.TextField(blank=True, null=True) # Optional field
     
     def __str__(self):
         return f"{self.port_number}/{self.service_name}"

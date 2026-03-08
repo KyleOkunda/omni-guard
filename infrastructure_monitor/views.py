@@ -30,7 +30,8 @@ def scan_network_view(request):
                 port_number=port['port'],
                 scanStatus=port['scanStatus'],
                 service_name=port['service'],
-                is_risk=port['risk']
+                is_risk=port['risk'],
+                exploit_vector=port['exploit_vector']
             )
             
         return redirect('network_report_detail', report_id=scan.id)
@@ -48,7 +49,7 @@ def report_detail_view(request, report_id):
     ports = scan.exposed_ports.all()
     
     # Calculate simple stats for view
-    risk_ports = ports.filter(is_risk=True).count()
+    risk_ports = ports.filter(is_risk="True").count()
     
     return render(request, 'infrastructure_monitor/report_detail.html', {
         'scan': scan,
