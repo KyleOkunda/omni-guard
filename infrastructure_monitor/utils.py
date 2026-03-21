@@ -71,7 +71,7 @@ def scan_target(target):
         elif result == errno.ETIMEDOUT or result == errno.EAGAIN or result == errno.EWOULDBLOCK:
             scan_dict["scanStatus"] = "Connection Attempt Timed Out. (Firewall Might Be Blocking Access to Target)"
             scan_dict["risk"] = False
-            scan_dict["exploit_vector"] = "Port might be open but failed to communicate or Firewall might be present to prevent access. Either way, port was not reached which is a good thing."        
+            scan_dict["exploit_vector"] = "Port might be open but failed to communicate or Firewall might be present to prevent access. Either way, port was not reached which is a good thing."
         elif result == errno.ENETUNREACH:
             scan_dict["scanStatus"] = "Network Unreachable. (Might Be No Internet Access)"
             scan_dict["risk"] = "Unevaluated"
