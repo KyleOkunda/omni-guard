@@ -4,6 +4,7 @@ import re
 import time
 import requests
 from django.shortcuts import render
+from cvss import CVSS3, CVSS2, CVSS4
 
 # Mock Database of Vulnerabilities
 MOCK_VULNDB = {
@@ -108,6 +109,30 @@ def compare_versions(current_ver, vulnerability_range):
         
     return False
 
+def calculate_severity_score(severity):
+    """
+    Converts severity string to a numeric score for sorting.
+    Critical: 4, High: 3, Medium: 2, Low: 1, N/A: 0
+    """
+    severity = severity[0]
+    severity_score = {}
+    severity_type = severity.get("type", "N/A")
+    if severity_type == "CVSS_V4":
+        score = CVSS4(severity.get("score", "0"))
+        severity_score["score"] = score.scores()[0]
+        severity_score["label"] =  score.severities()[0]
+        return severity_score
+    elif severity_type == "CVSS_V3":
+        score = CVSS3(severity.get("score", "0"))
+        severity_score["score"] = score.scores()[0]
+        severity_score["label"] =  score.severities()[0]
+        return severity_score
+    elif severity_type == "CVSS_V2":
+        score = CVSS2(severity.get("score", "0"))
+        severity_score["score"] = score.scores()[0]
+        severity_score["label"] =  score.severities()[0]
+        return severity_score
+
 def check_vulnerabilities(dependencies, ecosystem, request):
     """
     Checks list of dependencies against MOCK_VULNDB.
@@ -134,12 +159,13 @@ def check_vulnerabilities(dependencies, ecosystem, request):
                 for item in data.get('vulns', []):                                        
                     severity = item.get("severity", "N/A")
                     if(severity!= "N/A"):
+                        severity_score = calculate_severity_score(severity)                        
                         found_vulns.append({
                             'library_name': depName,
                             'version': depVersion,
                             'cve_id': item.get('id', 'N/A'),
                             'description': item.get('details', 'No description provided'),
-                            'severity': item.get("severity", "N/A")[0].get("score", "N/A"),
+                            'severity': f"{severity_score['label']}:  ({severity_score['score']})",
                             'remediation': "Please Update Dependency to Latest Version"
                         })
                     else:
