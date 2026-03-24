@@ -27,7 +27,7 @@
               -webkit-background-clip: text;
               -webkit-text-fill-color: transparent;
             "
-            >SecurityPlatform</span
+            >OmniGuard</span
           >
         </a>
       </div>
@@ -40,7 +40,7 @@
         <a href="{% url 'network_report_list' %}" class="nav-link"
           >Infrastructure</a
         >
-        <a href="{% url 'endpoint_dashboard' %}" class="nav-link">Endpoints</a>
+
         <form action="{% url 'logout' %}" method="post" style="display: inline">
           {% csrf_token %}
           <button
