@@ -1,5 +1,6 @@
 import errno
 import socket
+import math
 
 # Mock "Shodan" Data
 MOCK_PORTS = {
@@ -104,9 +105,12 @@ def scan_target(target):
 
 def calculate_grade(scan_data):
     """
-    Score = 100 - (Risk Ports * 20) - (Expired SSL * 30)
+    S(k) = 100 * e^(-lambda * k)
+    S(k) => Security Score based on the number of high-risk ports (k)
+    lambda => Decay constant that determines how quickly the score decreases as the number of high-risk ports increases
     """
     base_score = 100
+    lambda_const = 0.14
     numberOfRiskports = 0
     for port in scan_data:
         if port['risk'] == True:
@@ -114,16 +118,9 @@ def calculate_grade(scan_data):
     
     risk_ports = numberOfRiskports    
     print(f"Number of high-risk ports: {risk_ports}")    
-    ssl_expired = False 
-    #ssl_expired = scan_data['ssl_expired']
-    
-    penalty_ports = risk_ports * 20
-    penalty_ssl = 30 if ssl_expired else 0
-
-
-    
-    score = base_score - penalty_ports - penalty_ssl
-    if score < 0: score = 0
+    score = base_score * math.exp(-lambda_const * risk_ports)
+    score = round(score, 2)
+   
     
     # Grade assignment
     if score >= 90: grade = 'A'
