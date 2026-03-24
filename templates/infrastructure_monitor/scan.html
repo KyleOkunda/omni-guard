@@ -1,32 +1,83 @@
-{% extends 'base.html' %}
-
-{% block title %}Infrastructure Scan - SecurityPlatform{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Infrastructure Scan -
+SecurityPlatform{% endblock %} {% block content %}
 <div class="fade-in">
-    <h1 style="margin-bottom: 2rem;">Infrastructure Monitor</h1>
-    
-    <div class="card" style="max-width: 600px; margin: 0 auto;">
-        <h2 style="margin-bottom: 1.5rem;">New Network Scan</h2>
-        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-            Enter a Domain or IP address to scan for exposed ports and security misconfigurations.
-        </p>
-        
-        {% if error %}
-            <div class="status-danger" style="margin-bottom: 1rem; padding: 1rem; border-radius: 0.375rem;">
-                {{ error }}
-            </div>
-        {% endif %}
+  <h1 style="margin-bottom: 2rem">Infrastructure Monitor</h1>
 
-        <form method="post">
-            {% csrf_token %}
-            <div style="margin-bottom: 1.5rem;">
-                <label for="target" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 500;">Target Domain / IP</label>
-                <input type="text" name="target" id="target" placeholder="e.g. example.com or 192.168.1.1" required>
-            </div>
-            
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Start Scan</button>
-        </form>
+  <div
+    class="card"
+    style="max-width: 600px; margin: 0 auto; margin-bottom: 1rem"
+  >
+    <h2 style="margin-bottom: 1.5rem">New Network Scan</h2>
+    <p style="color: var(--text-muted); margin-bottom: 1.5rem">
+      Enter a Domain or IP address to scan for exposed ports and security
+      misconfigurations.
+    </p>
+
+    {% if error %}
+    <div
+      class="status-danger"
+      style="margin-bottom: 1rem; padding: 1rem; border-radius: 0.375rem"
+    >
+      {{ error }}
     </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div style="margin-bottom: 1.5rem">
+        <label
+          for="target"
+          style="
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+          "
+          >Target Domain / IP</label
+        >
+        <input
+          type="text"
+          name="target"
+          id="target"
+          placeholder="e.g. example.com or 192.168.1.1"
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        style="width: 100%; padding: 0.75rem"
+      >
+        Start Scan
+      </button>
+    </form>
+  </div>
+  <div class="card" style="max-width: 600px; margin: 0 auto">
+    <h2 style="margin-bottom: 1.5rem">
+      Tips for Security Best Practices for Port Management
+    </h2>
+
+    <ol type="1">
+      <li style="margin-bottom: 1.5rem">
+        <em style="font-size: large">Implement a Default Deny Policy</em> <br />
+        Your firewall should drop all incoming traffic by default. Explicitly
+        allow only what is needed (e.g., Port 443 for HTTPS traffic to your web
+        applications).
+      </li>
+      <li style="margin-bottom: 1.5rem">
+        <em style="font-size: large">Segment Your Network</em> <br />
+        Database servers (like PostgreSQL or MySQL) should sit on a private
+        subnet, accessible only by the backend application servers, not the
+        outside world.
+      </li>
+      <li style="margin-bottom: 1.5rem">
+        <em style="font-size: large">Obfuscation is Not Security</em> <br />
+        Moving a service like SSH from Port 22 to Port 2222 might stop automated
+        scripts, but a targeted port scan will find it immediately. Rely on
+        key-based authentication and restricted IP access instead.
+      </li>
+    </ol>
+  </div>
 </div>
 {% endblock %}
