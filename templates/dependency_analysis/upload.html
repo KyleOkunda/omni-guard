@@ -2,12 +2,18 @@
 SecurityPlatform{% endblock %} {% block content %}
 <div class="fade-in">
   <h1 style="margin-bottom: 2rem">Dependency Analysis Plugin</h1>
-
+  <div
+    class="card"
+    style="max-width: 600px; margin: 0 auto; margin-bottom: 1rem"
+  >
+    <strong style="color: greenyellow">Tip:</strong> Regualarly update your
+    dependencies to the latest versions to minimize security risks.
+  </div>
   <div class="card" style="max-width: 600px; margin: 0 auto">
     <h2 style="margin-bottom: 1.5rem">New Scan</h2>
     <p style="color: var(--text-muted); margin-bottom: 1.5rem">
-      Upload your `package.json` or `requirements.txt` file to scan for known
-      vulnerabilities.
+      Upload your `package.json`, `requirements.txt` or `Pipfile` file to scan
+      for known vulnerabilities.
     </p>
 
     {% if error %}
