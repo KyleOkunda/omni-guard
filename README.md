@@ -2,7 +2,7 @@
 
 Omni Guard is a dual-module security web application designed to assess the security posture of both software dependencies and server infrastructure. Built with Django, it provides an intuitive interface for scanning project files for known vulnerabilities and evaluating domains or IP addresses for exposed high-risk ports.
 
-## 🚀 Features
+##  Features
 
 ### 1. Dependency Analysis Module
 This module scans project dependency files for known security vulnerabilities using the OSV (Open Source Vulnerabilities) API.
@@ -23,7 +23,7 @@ The application categorizes the risk of each port based on the system's socket c
 ### 3. Scan History
 Omni Guard maintains a persistent history of all dependency and infrastructure scans, allowing users to track security postures over time.
 
-## 🧮 Security Posture Grading
+##  Security Posture Grading
 
 The infrastructure module assigns an overall security grade based on the number of exposed high-risk ports. This is calculated using an exponential decay function:
 
@@ -33,7 +33,7 @@ $$S(k) = 100 \cdot e^{-\lambda k}$$
 * **$k$**: The total number of open, high-risk ports detected.
 * **$\lambda$ (Decay Constant)**: Set to **0.14**. 
 
-**Conceptual Explanation:** The formula is designed so that a server with zero exposed high-risk ports starts with a perfect score of 100. The decay constant ($\lambda = 0.14$) represents a moderate penalty rate. It isn't overly punitive for a single open port, but as the number of exposed high-risk ports ($k$) increases, the score drops exponentially. This reflects the reality of attack surfaces: each additional exposed port compounds the overall risk to the system.
+The formula is designed so that a server with zero exposed high-risk ports starts with a perfect score of 100. The decay constant ($\lambda = 0.14$) represents a moderate penalty rate. It isn't overly punitive for a single open port, but as the number of exposed high-risk ports ($k$) increases, the score drops exponentially. This reflects the reality of attack surfaces: each additional exposed port compounds the overall risk to the system.
 
 **Grade Assignment:**
 * **A:** Score >= 90
@@ -42,17 +42,8 @@ $$S(k) = 100 \cdot e^{-\lambda k}$$
 * **D:** Score >= 60
 * **F:** Score < 60
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 * **Backend:** Django, Python
-* **Frontend:** Django Templates, HTML/CSS
+* **Frontend:** Django Templates, HTML/CSS/JS
 * **Database:** SQLite3
-
-## ⚙️ Installation & Setup
-
-To get Omni Guard running locally, follow the standard Django setup workflow:
-
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd omni-guard
