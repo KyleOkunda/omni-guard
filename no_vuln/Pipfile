@@ -1,0 +1,13 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+requests = ">=2.31.0"
+PyYAML = ">=6.0.1"
+fastapi = ">=0.110.0"
+cryptography = ">=42.0.5"
+
+[dev-packages]
+pytest = "*"

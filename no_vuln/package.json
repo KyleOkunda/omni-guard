@@ -1,0 +1,12 @@
+{
+  "name": "dependency-analysis-secure-test",
+  "version": "1.0.0",
+  "description": "Secure Node.js dependency test file",
+  "dependencies": {
+    "express": "^4.19.2",
+    "lodash": "^4.17.21",
+    "axios": "^1.6.8",
+    "jsonwebtoken": "^9.0.2",
+    "mysql": "^2.18.1"
+  }
+}

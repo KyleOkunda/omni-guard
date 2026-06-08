@@ -1,0 +1,5 @@
+# Vulnerable Python dependencies for testing
+Django==3.1.1
+urllib3==1.25.8
+Jinja2==2.10.1
+sqlparse==0.3.1

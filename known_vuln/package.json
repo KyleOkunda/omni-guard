@@ -1,0 +1,12 @@
+{
+  "name": "dependency-analysis-test",
+  "version": "1.0.0",
+  "description": "Vulnerable Node.js dependency test file",
+  "dependencies": {
+    "express": "4.15.5",
+    "lodash": "4.17.15",
+    "axios": "0.20.0",
+    "jsonwebtoken": "8.5.0",
+    "mysql": "2.14.1"
+  }
+}
